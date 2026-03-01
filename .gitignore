@@ -31,3 +31,6 @@ out
 .output
 .vercel
 .pnp.*
+node_modules/
+.cache/
+**/.cache/
