@@ -18,7 +18,7 @@
   "scripts": {
     "generate:favicons": "node scripts/generate-favicons.mjs",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build --dotfiles",
+    "deploy": "gh-pages -d build --dotfiles --repo https://x-access-token:${GITHUB_TOKEN}@github.com/markus1525/metabypass-vpn.git",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
