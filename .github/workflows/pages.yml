@@ -1,0 +1,10 @@
+name: Deploy to GitHub Pages
+on:
+  push:
+    branches: [ gh-pages ]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Do nothing - deployed by gh-pages npm package
+        run: echo "Deployment handled by npm run deploy"
