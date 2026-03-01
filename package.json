@@ -18,7 +18,7 @@
   "scripts": {
     "generate:favicons": "node scripts/generate-favicons.mjs",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
+    "deploy": "gh-pages -d build --dotfiles",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
