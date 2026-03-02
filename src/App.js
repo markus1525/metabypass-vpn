@@ -2,26 +2,31 @@ import { useState, useEffect, useRef, useCallback } from "react";
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 const countries = [
-  { name: "Singapore",     code: "SG", flag: "🇸🇬", basePing: 12,  region: "Asia",        metaOptimized: true  },
-  { name: "Thailand",      code: "TH", flag: "🇹🇭", basePing: 18,  region: "Asia",        metaOptimized: true  },
-  { name: "Malaysia",      code: "MY", flag: "🇲🇾", basePing: 22,  region: "Asia",        metaOptimized: true  },
-  { name: "Vietnam",       code: "VN", flag: "🇻🇳", basePing: 28,  region: "Asia",        metaOptimized: true  },
-  { name: "Indonesia",     code: "ID", flag: "🇮🇩", basePing: 35,  region: "Asia",        metaOptimized: true  },
-  { name: "Hong Kong",     code: "HK", flag: "🇭🇰", basePing: 38,  region: "Asia",        metaOptimized: true  },
-  { name: "Philippines",   code: "PH", flag: "🇵🇭", basePing: 42,  region: "Asia",        metaOptimized: true  },
-  { name: "Japan",         code: "JP", flag: "🇯🇵", basePing: 45,  region: "Asia",        metaOptimized: true  },
-  { name: "South Korea",   code: "KR", flag: "🇰🇷", basePing: 52,  region: "Asia",        metaOptimized: false },
-  { name: "Taiwan",        code: "TW", flag: "🇹🇼", basePing: 55,  region: "Asia",        metaOptimized: true  },
-  { name: "India",         code: "IN", flag: "🇮🇳", basePing: 60,  region: "Asia",        metaOptimized: false },
-  { name: "Australia",     code: "AU", flag: "🇦🇺", basePing: 90,  region: "Asia-Pacific", metaOptimized: false },
-  { name: "United States", code: "US", flag: "🇺🇸", basePing: 180, region: "Americas",    metaOptimized: true  },
-  { name: "Canada",        code: "CA", flag: "🇨🇦", basePing: 195, region: "Americas",    metaOptimized: false },
-  { name: "United Kingdom",code: "GB", flag: "🇬🇧", basePing: 210, region: "Europe",      metaOptimized: false },
-  { name: "Netherlands",   code: "NL", flag: "🇳🇱", basePing: 218, region: "Europe",      metaOptimized: false },
-  { name: "France",        code: "FR", flag: "🇫🇷", basePing: 220, region: "Europe",      metaOptimized: false },
-  { name: "Germany",       code: "DE", flag: "🇩🇪", basePing: 225, region: "Europe",      metaOptimized: false },
-  { name: "Sweden",        code: "SE", flag: "🇸🇪", basePing: 230, region: "Europe",      metaOptimized: false },
-  { name: "Switzerland",   code: "CH", flag: "🇨🇭", basePing: 235, region: "Europe",      metaOptimized: false },
+  // ── Real ProtonVPN WireGuard servers ────────────────────────────────────────
+  { name: "Singapore",     code: "SG", flag: "🇸🇬", basePing: 12,  region: "Asia",    metaOptimized: true,  vpnServer: "103.216.221.70:51820" },
+  { name: "Japan",         code: "JP", flag: "🇯🇵", basePing: 45,  region: "Asia",    metaOptimized: true,  vpnServer: "45.14.71.5:51820"     },
+  { name: "United States", code: "US", flag: "🇺🇸", basePing: 180, region: "Americas",metaOptimized: true,  vpnServer: "84.17.45.156:51820"   },
+  { name: "Mexico",        code: "MX", flag: "🇲🇽", basePing: 190, region: "Americas",metaOptimized: false, vpnServer: "84.20.27.47:51820"    },
+  { name: "Netherlands",   code: "NL", flag: "🇳🇱", basePing: 218, region: "Europe",  metaOptimized: false, vpnServer: "212.8.249.21:51820"   },
+  { name: "Norway",        code: "NO", flag: "🇳🇴", basePing: 225, region: "Europe",  metaOptimized: false, vpnServer: "95.173.205.159:51820" },
+
+  // ── UI-only servers (no real VPN config yet) ─────────────────────────────────
+  { name: "Thailand",      code: "TH", flag: "🇹🇭", basePing: 18,  region: "Asia",        metaOptimized: true,  vpnServer: null },
+  { name: "Malaysia",      code: "MY", flag: "🇲🇾", basePing: 22,  region: "Asia",        metaOptimized: true,  vpnServer: null },
+  { name: "Vietnam",       code: "VN", flag: "🇻🇳", basePing: 28,  region: "Asia",        metaOptimized: true,  vpnServer: null },
+  { name: "Indonesia",     code: "ID", flag: "🇮🇩", basePing: 35,  region: "Asia",        metaOptimized: true,  vpnServer: null },
+  { name: "Hong Kong",     code: "HK", flag: "🇭🇰", basePing: 38,  region: "Asia",        metaOptimized: true,  vpnServer: null },
+  { name: "Philippines",   code: "PH", flag: "🇵🇭", basePing: 42,  region: "Asia",        metaOptimized: true,  vpnServer: null },
+  { name: "South Korea",   code: "KR", flag: "🇰🇷", basePing: 52,  region: "Asia",        metaOptimized: false, vpnServer: null },
+  { name: "Taiwan",        code: "TW", flag: "🇹🇼", basePing: 55,  region: "Asia",        metaOptimized: true,  vpnServer: null },
+  { name: "India",         code: "IN", flag: "🇮🇳", basePing: 60,  region: "Asia",        metaOptimized: false, vpnServer: null },
+  { name: "Australia",     code: "AU", flag: "🇦🇺", basePing: 90,  region: "Asia-Pacific", metaOptimized: false, vpnServer: null },
+  { name: "Canada",        code: "CA", flag: "🇨🇦", basePing: 195, region: "Americas",    metaOptimized: false, vpnServer: null },
+  { name: "United Kingdom",code: "GB", flag: "🇬🇧", basePing: 210, region: "Europe",      metaOptimized: false, vpnServer: null },
+  { name: "France",        code: "FR", flag: "🇫🇷", basePing: 220, region: "Europe",      metaOptimized: false, vpnServer: null },
+  { name: "Germany",       code: "DE", flag: "🇩🇪", basePing: 225, region: "Europe",      metaOptimized: false, vpnServer: null },
+  { name: "Sweden",        code: "SE", flag: "🇸🇪", basePing: 230, region: "Europe",      metaOptimized: false, vpnServer: null },
+  { name: "Switzerland",   code: "CH", flag: "🇨🇭", basePing: 235, region: "Europe",      metaOptimized: false, vpnServer: null },
 ];
 
 const metaApps = [
@@ -167,8 +172,9 @@ const ProfileSheet = ({ onInstall, onCancel }) => (
         {[
           ["Signed by", "Min Thu Kyaw Khaung (Markus)"],
           ["Type", "VPN Configuration"],
-          ["Protocol", "WireGuard / IKEv2"],
-          ["Contains", "VPN Payload, DNS Settings"],
+          ["Protocol", "WireGuard"],
+          ["Contains", "SG · JP · US · MX · NL · NO"],
+          ["Provider",   "ProtonVPN Free"], 
         ].map(([l, v], i, arr) => (
           <div key={l} style={{
             display: "flex", justifyContent: "space-between", padding: "12px 16px",
@@ -553,19 +559,35 @@ export default function VPNApp() {
 
   // ── Permission handlers ───────────────────────────────────────────────────────
   const handleNotifRequest = () => {
-    requestRealNotifPermission();
-  };
+  requestRealNotifPermission();
+};
 
-  const handleVPNAllow = () => {
+const handleVPNAllow = () => {
+  // Open iOS Settings VPN page directly (deep link)
+  // This works on real iOS Safari to guide the user
+  window.open("App-Prefs:root=VPN", "_blank");
+
+  // Also try the universal settings link as fallback
+  setTimeout(() => {
     setPermVPN(true);
     setDialog(null);
     setTimeout(() => setDialog("profile"), 400);
-  };
+  }, 1500);
+};
 
-  const handleProfileInstall = () => {
+const handleProfileInstall = () => {
+  const profileUrl =
+    process.env.REACT_APP_PROFILE_URL ||
+    `${window.location.origin}/metabypass-vpn/vpn-profile.mobileconfig`;
+
+  // Triggers real iOS "Profile Downloaded" prompt in Safari
+  window.location.href = profileUrl;
+
+  setTimeout(() => {
     setProfile(true);
     setDialog(null);
-  };
+  }, 3000);
+};
 
   // ── Connect ───────────────────────────────────────────────────────────────────
   const handleConnect = () => {
