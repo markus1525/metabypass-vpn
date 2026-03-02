@@ -1,11 +1,11 @@
 {
   "name": "MetaBypass VPN",
   "short_name": "MetaBypass",
-  "description": "Bypass Myanmar restrictions",
+  "description": "Bypass Myanmar restrictions on Facebook & Meta apps",
   "start_url": ".",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "background_color": "#080c14",
+  "theme_color": "#080c14",
   "icons": [
     {
       "src": "favicon-96x96.png",
