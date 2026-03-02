@@ -50,7 +50,7 @@ const CSS = `
   }
 
   #root {
-    min-height: 100dvh;
+    min-height: 100vh;
     min-height: -webkit-fill-available;
     display: flex;
     flex-direction: column;
