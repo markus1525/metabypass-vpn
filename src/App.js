@@ -174,7 +174,7 @@ const ProfileSheet = ({ onInstall, onCancel }) => (
           ["Type", "VPN Configuration"],
           ["Protocol", "WireGuard"],
           ["Contains", "SG · JP · US · MX · NL · NO"],
-          ["Provider",   "ProtonVPN Free"], 
+          ["Provider",   "ProtonVPN Free"],
         ].map(([l, v], i, arr) => (
           <div key={l} style={{
             display: "flex", justifyContent: "space-between", padding: "12px 16px",
@@ -523,7 +523,6 @@ export default function VPNApp() {
   // ── Real notification permission request ─────────────────────────────────────
   const requestRealNotifPermission = useCallback(async () => {
     if (!("Notification" in window)) {
-      // Browser doesn't support notifications — just mark granted for UI
       setPermNotif(true);
       setDialog(null);
       return;
@@ -534,15 +533,13 @@ export default function VPNApp() {
       return;
     }
     if (Notification.permission === "denied") {
-      alert("Notifications are blocked. Please enable them in your browser/device settings.");
+      alert("Notifications are blocked. Please enable them in your device Settings → MetaBypass.");
       setDialog(null);
       return;
     }
-    // Actually request from browser/OS — this shows the real iOS/browser prompt
     const result = await Notification.requestPermission();
     if (result === "granted") {
       setPermNotif(true);
-      // Send a test notification
       new Notification("MetaBypass VPN", {
         body: "Notifications enabled! You'll be alerted on connection changes.",
         icon: window.location.origin + "/metabypass-vpn/master-icon.png",
@@ -559,35 +556,30 @@ export default function VPNApp() {
 
   // ── Permission handlers ───────────────────────────────────────────────────────
   const handleNotifRequest = () => {
-  requestRealNotifPermission();
-};
+    requestRealNotifPermission();
+  };
 
-const handleVPNAllow = () => {
-  // Open iOS Settings VPN page directly (deep link)
-  // This works on real iOS Safari to guide the user
-  window.open("App-Prefs:root=VPN", "_blank");
-
-  // Also try the universal settings link as fallback
-  setTimeout(() => {
+  // FIX: Removed broken App-Prefs:root=VPN deep link (Apple removed this in modern iOS).
+  // Simply mark as set up and guide the user via the dialog text instead.
+  const handleVPNAllow = () => {
     setPermVPN(true);
     setDialog(null);
     setTimeout(() => setDialog("profile"), 400);
-  }, 1500);
-};
+  };
 
-const handleProfileInstall = () => {
-  const profileUrl =
-    process.env.REACT_APP_PROFILE_URL ||
-    `${window.location.origin}/metabypass-vpn/vpn-profile.mobileconfig`;
+  const handleProfileInstall = () => {
+    const profileUrl =
+      process.env.REACT_APP_PROFILE_URL ||
+      `${window.location.origin}/metabypass-vpn/vpn-profile.mobileconfig`;
 
-  // Triggers real iOS "Profile Downloaded" prompt in Safari
-  window.location.href = profileUrl;
+    // Triggers real iOS "Profile Downloaded" prompt in Safari
+    window.location.href = profileUrl;
 
-  setTimeout(() => {
-    setProfile(true);
-    setDialog(null);
-  }, 3000);
-};
+    setTimeout(() => {
+      setProfile(true);
+      setDialog(null);
+    }, 3000);
+  };
 
   // ── Connect ───────────────────────────────────────────────────────────────────
   const handleConnect = () => {
@@ -600,6 +592,11 @@ const handleProfileInstall = () => {
   };
 
   const connectManual = () => {
+    // Block connection to UI-only servers that have no real VPN config yet
+    if (!manualCountry.vpnServer) {
+      setDialog("unavailable");
+      return;
+    }
     setPhase("connecting");
     setTimeout(() => {
       const c = { ...manualCountry, ping: manualCountry.basePing + rand(-4, 10) };
@@ -615,7 +612,9 @@ const handleProfileInstall = () => {
 
   const runAutoScan = () => {
     setPhase("scanning"); setScanResults([]); setScanLog([]);
-    const shuffled = [...countries].sort(() => Math.random() - 0.5).slice(0, 12);
+    // Auto mode only uses real servers that have an actual VPN config
+    const realServers = countries.filter(c => c.vpnServer);
+    const shuffled = [...realServers].sort(() => Math.random() - 0.5).slice(0, 12);
     const scanned = shuffled.map(c => ({ ...c, ping: c.basePing + rand(-5, 18) }));
     let i = 0;
     scanRef.current = setInterval(() => {
@@ -955,12 +954,14 @@ const handleProfileInstall = () => {
                       border: `1px solid ${!autoMode && manualCountry.code === c.code ? "rgba(24,119,242,0.4)" : "rgba(255,255,255,0.06)"}`,
                       borderRadius: 13, display: "flex", alignItems: "center", gap: 12,
                       cursor: "pointer", animation: `slideUp 0.25s ease ${i * 0.04}s both`,
+                      opacity: c.vpnServer ? 1 : 0.5,
                     }}>
                       <span style={{ fontSize: 22 }}>{c.flag}</span>
                       <div style={{ flex: 1 }}>
                         <div style={{ display: "flex", gap: 7, alignItems: "center" }}>
                           <span style={{ color: !autoMode && manualCountry.code === c.code ? "#4da3ff" : "#fff", fontWeight: 600, fontSize: 13 }}>{c.name}</span>
                           <span style={{ background: "#1877F215", border: "1px solid #1877F225", borderRadius: 4, padding: "1px 5px", fontSize: 9, color: "#4da3ff" }}>FB</span>
+                          {!c.vpnServer && <span style={{ background: "rgba(255,180,0,0.12)", border: "1px solid rgba(255,180,0,0.3)", borderRadius: 4, padding: "1px 5px", fontSize: 9, color: "#ffc107" }}>SOON</span>}
                         </div>
                         <div style={{ color: "rgba(255,255,255,0.22)", fontSize: 10, marginTop: 2 }}>{c.region}</div>
                       </div>
@@ -1238,16 +1239,38 @@ const handleProfileInstall = () => {
       {dialog === "vpn" && (
         <AlertBox
           icon="🔒" iconBg="rgba(24,119,242,0.15)"
-          title="VPN Configuration"
-          body="Real VPN tunneling requires a native iOS app. To manually set up WireGuard: go to iOS Settings → VPN → Add Configuration. This marks VPN as configured in the app UI."
+          title="Set Up WireGuard VPN"
+          body={
+            "1. Install the WireGuard app from the App Store.\n\n" +
+            "2. Tap 'Install Profile' below to download the VPN config.\n\n" +
+            "3. Open WireGuard app → the tunnel will appear there, NOT in iOS Settings → VPN.\n\n" +
+            "4. Toggle it on inside WireGuard to connect."
+          }
           actions={[
             { label: "Cancel", onPress: () => setDialog(null) },
-            { label: "Mark Set Up", primary: true, onPress: handleVPNAllow },
+            { label: "Install Profile →", primary: true, onPress: handleVPNAllow },
           ]}
         />
       )}
       {dialog === "profile" && (
         <ProfileSheet onInstall={handleProfileInstall} onCancel={() => setDialog(null)} />
+      )}
+      {dialog === "unavailable" && (
+        <AlertBox
+          icon="🚧" iconBg="rgba(255,180,0,0.12)"
+          title={`${manualCountry.flag} ${manualCountry.name} — Coming Soon`}
+          body={
+            "This server is a preview only — no VPN config is set up for it yet.\n\n" +
+            "Available servers right now:\n" +
+            "🇸🇬 Singapore · 🇯🇵 Japan · 🇺🇸 United States\n" +
+            "🇲🇽 Mexico · 🇳🇱 Netherlands · 🇳🇴 Norway\n\n" +
+            "Use Auto Best to automatically pick the fastest working server."
+          }
+          actions={[
+            { label: "Close", onPress: () => setDialog(null) },
+            { label: "Use Auto Best", primary: true, onPress: () => { setAutoMode(true); setDialog(null); } },
+          ]}
+        />
       )}
     </>
   );
