@@ -648,7 +648,7 @@ export default function VPNApp() {
 
       {/* ── MAIN APP ── */}
       {appStage === "ready" && (
-        <div style={{ display: "flex", flexDirection: "column", height: "100dvh", height: "100vh", background: "#080c14" }}>
+        <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", background: "#080c14" }}>
 
           {/* ── HEADER ── */}
           <div style={{
