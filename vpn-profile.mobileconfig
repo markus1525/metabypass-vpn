@@ -18,7 +18,7 @@
       <string>A1A1A1A1-A1A1-A1A1-A1A1-A1A1A1A1A1A1</string>
       <key>PayloadDisplayName</key>
       <string>MetaBypass · 🇸🇬 Singapore (SG-FREE#16)</string>
-      <key>WireGuard</key>
+      <key>WireGuardConfig</key>
       <dict>
         <key>Interface</key>
         <dict>
@@ -60,7 +60,7 @@
       <string>B2B2B2B2-B2B2-B2B2-B2B2-B2B2B2B2B2B2</string>
       <key>PayloadDisplayName</key>
       <string>MetaBypass · 🇯🇵 Japan (JP-FREE#3)</string>
-      <key>WireGuard</key>
+      <key>WireGuardConfig</key>
       <dict>
         <key>Interface</key>
         <dict>
@@ -108,7 +108,7 @@
       <string>C3C3C3C3-C3C3-C3C3-C3C3-C3C3C3C3C3C3</string>
       <key>PayloadDisplayName</key>
       <string>MetaBypass · 🇺🇸 United States (US-FREE#37)</string>
-      <key>WireGuard</key>
+      <key>WireGuardConfig</key>
       <dict>
         <key>Interface</key>
         <dict>
@@ -156,7 +156,7 @@
       <string>D4D4D4D4-D4D4-D4D4-D4D4-D4D4D4D4D4D4</string>
       <key>PayloadDisplayName</key>
       <string>MetaBypass · 🇲🇽 Mexico (MX-FREE#8)</string>
-      <key>WireGuard</key>
+      <key>WireGuardConfig</key>
       <dict>
         <key>Interface</key>
         <dict>
@@ -198,7 +198,7 @@
       <string>E5E5E5E5-E5E5-E5E5-E5E5-E5E5E5E5E5E5</string>
       <key>PayloadDisplayName</key>
       <string>MetaBypass · 🇳🇱 Netherlands (NL-FREE#240)</string>
-      <key>WireGuard</key>
+      <key>WireGuardConfig</key>
       <dict>
         <key>Interface</key>
         <dict>
@@ -240,7 +240,7 @@
       <string>F6F6F6F6-F6F6-F6F6-F6F6-F6F6F6F6F6F6</string>
       <key>PayloadDisplayName</key>
       <string>MetaBypass · 🇳🇴 Norway (NO-FREE#2)</string>
-      <key>WireGuard</key>
+      <key>WireGuardConfig</key>
       <dict>
         <key>Interface</key>
         <dict>
